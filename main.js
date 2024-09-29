@@ -39,7 +39,7 @@ function InitGame(){
     cellsQuantity = width * height;    
     minesQuantity = Math.floor(cellsQuantity * (minePercent) / 100)
     minesLeft = minesQuantity
-    
+
     UpdateMinesLeft()
     UpdateMinesQuantity()
     StyleBoard()
@@ -50,6 +50,9 @@ function InitGame(){
 }
 
 function GenerateMines(minesQuantity){
+    // TODO: generate mines procedurally to prevent completely random mine generation
+
+
     let counter = 0    
     for(let x = 0; x < width; x++){
         cellsGrid[x] = []
