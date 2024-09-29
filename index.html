@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Buscaminas</title>
+</head>
+<body id="body">
+    <section class="menu">
+        <h1>Buscaminas</h1>
+        <div class="config">
+            <article>
+                <label for="width">Ancho</label>
+                <input type="number" id="width" value="10">
+            </article>
+            <article>
+                <label for="height">Alto</label>
+                <input type="number" id="height" value="10">
+            </article>
+            <article>
+                <label for="mines">Minas (Dif. alta)</label>
+                <input type="number" id="mines">
+            </article>
+        </div>
+        <button class="btn" id="btn" onclick="InitGame()">
+            Comenzar            
+        </button>
+        <div class="board-header">
+            <span>Minas restantes:</span>
+            <span id="minesLeft"></span>
+        </div>
+    </section>
+    <section class="board-container">
+        <div class="board">  
+        </div>
+    </section>
+    <section>
+        <h1 id="result"></h1>
+    </section>
+    <script src="Cell.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

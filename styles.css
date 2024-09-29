@@ -1,0 +1,90 @@
+*{
+    margin:0;
+    padding:0;
+    text-align: center;
+    color:white;
+    font-size: 20px;
+    background-color: rgb(110, 110, 110);
+}
+
+body{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items:center;
+}
+
+input{
+    background-color: white;
+    width:100px;
+    color:black;
+}
+
+h1{
+    width:100vw;
+    font-size:50px;
+}
+
+.btn{
+    background-color: black;
+    margin: 10px 0;
+    padding:6px;
+}
+
+input:disabled{
+    background-color: rgb(180, 180, 180);
+}
+
+.board-container{
+    padding:10px;
+}
+
+.board{
+    border: solid 1px red;
+    display:flex;
+    justify-content:center;
+    align-items: center;
+    flex-wrap:wrap;
+}
+
+.red{
+    background-color: red !important;
+}
+
+.blocked{
+    background-color: rgb(148, 115, 179) !important;
+}
+
+.win{
+    color:rgb(83, 204, 83)
+}
+
+.lose{
+    color:rgb(231, 74, 74)
+}
+
+.board-header{
+    margin-top:15px;
+}
+
+.cell{
+    width:25px;
+    height:25px;
+    color: black;
+    border: 1px white solid;
+    background-color: rgb(187, 183, 152);
+    font-size:20px;
+    display:flex;
+    align-items:center;
+    justify-content: center;    
+}
+
+.discovered{
+    background-color: rgb(255, 252, 230);
+}
+
+.config{
+    display:flex;
+    justify-content:space-around;
+    flex-wrap: wrap;
+}
