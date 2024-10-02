@@ -1,0 +1,24 @@
+If the user clicks a corner cell:
+||  Blank spaces  ||  Mines  ||  Probability  ||
+||       3        ||    0    ||      33%      ||
+||       2        ||    1    ||      33%      ||
+||       1        ||    2    ||      33%      ||
+
+
+If the user clicks a border cell:
+||  Blank spaces  ||  Mines  ||  Probability  ||
+||       5        ||    0    ||      25%      ||
+||       4        ||    1    ||      25%      ||
+||       3        ||    2    ||      25%      ||
+||       2        ||    3    ||      25%      ||
+
+
+If the user clicks a no-corner no-wall cell:
+||  Blank spaces  ||  Mines  ||  Probability  ||
+||       8        ||    0    ||      10%      ||
+||       7        ||    1    ||      10%      ||
+||       6        ||    2    ||      25%      ||
+||       5        ||    3    ||      10%      ||
+||       4        ||    4    ||      25%      ||
+||       3        ||    5    ||      10%      ||
+||       2        ||    6    ||      10%      ||

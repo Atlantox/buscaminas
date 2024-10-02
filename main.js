@@ -11,6 +11,7 @@ const audio = new Audio('desert.wav');
 audio.loop = true
 
 const cellSize = 27; // 20px height and weight and 2px border in all sides
+let gameBeginning = true
 let gameFinished = false
 let revealedCells = 0
 let cellsQuantity = 0
@@ -43,54 +44,40 @@ function InitGame(){
     UpdateMinesLeft()
     UpdateMinesQuantity()
     StyleBoard()
-    GenerateMines(minesQuantity)
+    GenerateBoard()
+    //GenerateMines(minesQuantity)
 
     const beginButton = document.getElementById('btn');
     beginButton.innerHTML = 'Reiniciar'    
 }
 
-function GenerateMines(minesQuantity){
-    // The mine generation will prevent 6 or more mines in the subcorners
+// Create the empty cells without mines
+function GenerateBoard(){
+    let counter = 0;
 
-    let tentativeMinesCoords = []
-    for(let i = 0; i < minesQuantity; i++){
-        const randomX = Math.floor(Math.random() * width)
-        const randomY = Math.floor(Math.random() * height)
-
-        tentativeMinesCoords.push({x: randomX, y: randomY})
-    }
-
-    let counter = 0    
     for(let x = 0; x < width; x++){
         cellsGrid[x] = []
         for(let y = 0; y < height; y++){
             counter ++;
-            let mine = ''
-            if(Math.floor(Math.random() * 100) <= (mineProbability -1) ){
-                // Mine generated!
-                mine = 'M'
-                minesQuantity ++;
-            }
-
             const htmlCell = document.createElement('span')
             htmlCell.classList.add('cell')
-            htmlCell.id = i
+            htmlCell.id = counter
             htmlCell.setAttribute('x', x)
             htmlCell.setAttribute('y', y)
             board.appendChild(htmlCell)
-            const logicCell = new Cell(x, y, mine !== '', counter, htmlCell)            
+            const logicCell = new Cell(x, y, counter, htmlCell)            
             cellsGrid[x][y] = logicCell
 
-            htmlCell.addEventListener('click', (e) => { DiscoverCell(logicCell); console.log('Celdas reveladas ' + revealedCells) })
+            htmlCell.addEventListener('click', (e) => { DiscoverCell(logicCell);})
             htmlCell.addEventListener('contextmenu', function(e) {
                 e.preventDefault(); 
                 BlockCell(logicCell); 
                 return false 
-            }, false)
-            
+            }, false)            
         } 
     }    
 }
+
 
 function DiscoverCell(logicCell, automatic = false){
     if(gameFinished)
@@ -104,31 +91,47 @@ function DiscoverCell(logicCell, automatic = false){
             GameOver()
     }
     else{
-        const result = GetProximity(logicCell)
+        if(gameBeginning){
+            gameBeginning = false
+            // The first move will be always mineless, generating a number of mines depending of the cell location
+            // To see the probabilities watch the first_move_mines_generation.txt.txt file            
+            const nearMines = logicCell.GetNearMinesFirstClick()
 
-        RevealCell(logicCell)
-        
-        if(revealedCells >= (cellsQuantity - minesQuantity)){
-            WinGame()
+            for(let i = 0; i < nearMines; i ++){
+                // Creating the near mines
+                // TODO: choose the places randomly and mark the cell.ready = true, then at the moment of generation of the other mines, ignore the cell.ready cells
+            }
+            
+
         }
-
-        
-        if(result.proximity === 0){
-            result.nearCells.forEach((c) => {
-                if(c.revealed === false)
-                    DiscoverCell(c, true)
-            })
-        }else{
-            result.nearCells.forEach((c) => {
-                const cProximity = GetProximity(c)
-
-                if(c.revealed === false && cProximity.proximity === 0)
-                    DiscoverCell(c, true)
-            })
-            logicCell.htmlCell.innerHTML = result.proximity
+        else{
+            const result = GetProximity(logicCell)
+    
+            RevealCell(logicCell)
+            
+            if(revealedCells >= (cellsQuantity - minesQuantity)){
+                WinGame()
+            }
+    
+            
+            if(result.proximity === 0){
+                result.nearCells.forEach((c) => {
+                    if(c.revealed === false)
+                        DiscoverCell(c, true)
+                })
+            }else{
+                result.nearCells.forEach((c) => {
+                    const cProximity = GetProximity(c)
+    
+                    if(c.revealed === false && cProximity.proximity === 0)
+                        DiscoverCell(c, true)
+                })
+                logicCell.htmlCell.innerHTML = result.proximity
+            }
         }
     }
 }
+
 
 function GetProximity(logicCell){
     let prox = 0
@@ -170,6 +173,7 @@ function GetProximity(logicCell){
     };
 }
 
+
 function RevealCell(logicCell){
     if(logicCell.isMine)
         logicCell.htmlCell.classList.add('red')
@@ -198,6 +202,15 @@ function BlockCell(logicCell){
         minesLeft--
     }
     UpdateMinesLeft()
+}
+
+// The mine generation will prevent 6 or more mines in the subcorners
+function GenerateMines(mineQuantity){
+    for(let i = 0; i < minesQuantity; i++){
+        const randomX = Math.floor(Math.random() * width)
+        const randomY = Math.floor(Math.random() * height)
+        cellsGrid[randomX][randomY].isMine = true        
+    } 
 }
 
 
