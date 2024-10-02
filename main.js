@@ -50,8 +50,15 @@ function InitGame(){
 }
 
 function GenerateMines(minesQuantity){
-    // TODO: generate mines procedurally to prevent completely random mine generation
+    // The mine generation will prevent 6 or more mines in the subcorners
 
+    let tentativeMinesCoords = []
+    for(let i = 0; i < minesQuantity; i++){
+        const randomX = Math.floor(Math.random() * width)
+        const randomY = Math.floor(Math.random() * height)
+
+        tentativeMinesCoords.push({x: randomX, y: randomY})
+    }
 
     let counter = 0    
     for(let x = 0; x < width; x++){
@@ -64,9 +71,10 @@ function GenerateMines(minesQuantity){
                 mine = 'M'
                 minesQuantity ++;
             }
+
             const htmlCell = document.createElement('span')
             htmlCell.classList.add('cell')
-            htmlCell.id = counter
+            htmlCell.id = i
             htmlCell.setAttribute('x', x)
             htmlCell.setAttribute('y', y)
             board.appendChild(htmlCell)
@@ -79,6 +87,7 @@ function GenerateMines(minesQuantity){
                 BlockCell(logicCell); 
                 return false 
             }, false)
+            
         } 
     }    
 }
