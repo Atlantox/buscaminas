@@ -19,13 +19,14 @@ let minesQuantity = 0
 let width = 0
 let height = 0
 let minesLeft = 0
-const minePercent = 25; // X% of all cells will be mines
+const minePercent = 20; // X% of all cells will be mines
 let cellsGrid = []
 
 function ResetVars(){
     boardResult.innerHTML = ''
     boardResult.classList = []
     gameFinished = false
+    gameBeginning = true
     board.innerHTML = ''
     revealedCells = 0
     minesQuantity = 0
@@ -44,7 +45,7 @@ function InitGame(){
     UpdateMinesLeft()
     UpdateMinesQuantity()
     StyleBoard()
-    GenerateBoard()
+    DisplayBoard()
     //GenerateMines(minesQuantity)
 
     const beginButton = document.getElementById('btn');
@@ -52,7 +53,7 @@ function InitGame(){
 }
 
 // Create the empty cells without mines
-function GenerateBoard(){
+function DisplayBoard(){
     let counter = 0;
 
     for(let x = 0; x < width; x++){
@@ -92,17 +93,25 @@ function DiscoverCell(logicCell, automatic = false){
     }
     else{
         if(gameBeginning){
+            console.log('Detectado primer click')
             gameBeginning = false
             // The first move will be always mineless, generating a number of mines depending of the cell location
-            // To see the probabilities watch the first_move_mines_generation.txt.txt file            
-            const nearMines = logicCell.GetNearMinesFirstClick()
+            // To see the probabilities watch the first_move_mines_generation.txt.txt file      
 
-            for(let i = 0; i < nearMines; i ++){
-                // Creating the near mines
-                // TODO: choose the places randomly and mark the cell.ready = true, then at the moment of generation of the other mines, ignore the cell.ready cells
-            }
-            
-
+            //const cellMinesCoords = GenerateFirstsMines(logicCell) // Generate the firsts mines and return an array with the coords
+            //console.log('Primeras minas creadas')
+            //console.log(cellMinesCoords)
+            // Then, let's generate the rest of the mines
+            // The procedural logic is: A sub cornar can't be have 6 or more mines nearby
+            logicCell.ready = true
+            logicCell.isMine = false
+            const surroundingCells = GetSurroundingCells(logicCell)            
+            surroundingCells.forEach((cell) => {
+                cell.ready = true
+                cell.isMine = false
+            })
+            const minesGenerated = GenerateMines()
+            DiscoverCell(logicCell)
         }
         else{
             const result = GetProximity(logicCell)
@@ -133,12 +142,70 @@ function DiscoverCell(logicCell, automatic = false){
 }
 
 
+function GenerateFirstsMines(logicCell){
+    const nearMines = logicCell.GetNearMinesFirstClick()
+    const surroundingCells = GetSurroundingCells(logicCell)
+    const cellMines = []
+    
+    // Generating the near mines
+    let generatedMines = 0
+    while(generatedMines <= nearMines){
+        const randomCell = surroundingCells[Math.floor(Math.random() * surroundingCells.length)]
+        const stringCoords = randomCell.x + '-' + randomCell.y
+
+        if(cellMines.includes(stringCoords))
+            continue;
+        
+        cellMines.push(stringCoords)
+        generatedMines++
+    }
+
+    for(let i = 0; i < surroundingCells.length; i++){
+        const currentCell = surroundingCells[i]
+        const stringCoords = currentCell.x + '-' + currentCell.y
+        if(cellMines.includes(stringCoords))
+            currentCell.isMine = true
+
+        currentCell.ready = true
+    }
+
+    return cellMines
+}
+
+
+function GetSurroundingCells(logicCell){
+    const xLimitLeft = logicCell.x - 1
+    const xLimitRight = logicCell.x + 1
+    const yLimitUp = logicCell.y - 1
+    const yLimitDown = logicCell.y + 1
+    const surroundingCells = []
+
+    for(let x = xLimitLeft; x <= xLimitRight; x++){
+        for(let y = yLimitUp; y <= yLimitDown; y++){
+            if(cellsGrid[x] === undefined)
+                continue;
+
+            if(cellsGrid[x][y] === undefined)
+                continue;
+
+            if(x === logicCell.x && y === logicCell.y)
+                continue;
+
+            const foundedCell = cellsGrid[x][y]
+            surroundingCells.push(foundedCell)
+        }   
+    }
+
+    return surroundingCells
+}
+
+
 function GetProximity(logicCell){
     let prox = 0
-    let xLimitLeft = logicCell.x - 1
-    let xLimitRight = logicCell.x + 1
-    let yLimitUp = logicCell.y - 1
-    let yLimitDown = logicCell.y + 1
+    const xLimitLeft = logicCell.x - 1
+    const xLimitRight = logicCell.x + 1
+    const yLimitUp = logicCell.y - 1
+    const yLimitDown = logicCell.y + 1
     const nearCells = []
 
     for(let x = xLimitLeft; x <= xLimitRight; x++){
@@ -157,13 +224,6 @@ function GetProximity(logicCell){
             
             if(foundedCell.isMine)
                 prox++
-            else{
-                /*
-                const proximity = GetProximity(foundedCell)
-                if(proximity === 0)
-                    DiscoverCell(document.getElementById(foundedCell))
-                */
-            }
         }   
     }
 
@@ -205,12 +265,56 @@ function BlockCell(logicCell){
 }
 
 // The mine generation will prevent 6 or more mines in the subcorners
-function GenerateMines(mineQuantity){
-    for(let i = 0; i < minesQuantity; i++){
+// Recieve an array of cells that are already mines
+function GenerateMines(){
+    let minesGenerated = 0
+    while(minesGenerated <= minesQuantity){
         const randomX = Math.floor(Math.random() * width)
         const randomY = Math.floor(Math.random() * height)
-        cellsGrid[randomX][randomY].isMine = true        
+        if(cellsGrid[randomX][randomY].ready)
+            continue
+
+        cellsGrid[randomX][randomY].isMine = true
+        cellsGrid[randomX][randomY].ready = true
+        minesGenerated++
     } 
+
+    // Once generated, we have to check is a subcorner has 6 or more mines
+    const subcorners = [
+        {x: 1, y: 1},
+        {x: 1, y: height - 2},
+        {x: width - 2, y: 1},
+        {x: width - 2, y: height - 2},
+    ]
+
+    let generationOK = true
+    for(let i = 0; i < subcorners.length; i++){
+        const sc = subcorners[i]
+        if(GetProximity(cellsGrid[sc.x][sc.y]).proximity >= 6){
+            generationOK = false
+            break
+        }
+    }
+
+    let result = undefined
+    if(generationOK){
+        result = true
+    }
+    else{
+        // We have to revert all mines and generate them again
+        for(let x = 0; x < width; x ++){
+            for(let y = 0; y < height; y++){
+                if(cellCoordsExceptions.includes(x + '-' + y))
+                    continue
+
+                cellsGrid[x][y].isMine = false
+                cellsGrid[x][y].ready = false
+            }
+        }
+        result = GenerateMines(cellCoordsExceptions)
+    }
+
+    return result
 }
 
 

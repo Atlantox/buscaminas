@@ -1,28 +1,31 @@
 class Cell{
-    constructor(x, y, isMine, id, htmlCell){
+    constructor(x, y, id, htmlCell){
         this.x = x
         this.y = y
-        this.isMine = false
         this.id = id
+        this.htmlCell = htmlCell
+
+        this.isMine = false
+        this.ready = false
         this.revealed = false
         this.isBlocked = false
-        this.htmlCell = htmlCell
     }
 
     GetNearMinesFirstClick(){
+        return 0
         let clickedCellType = 'inside'
 
         if(
-            (logicCell.x === 0 || logicCell.x === width - 1) ||
-            (logicCell.y === 0 || logicCell.y === height - 1)
+            (this.x === 0 || this.x === width - 1) ||
+            (this.y === 0 || this.y === height - 1)
         )
             clickedCellType = 'border'
 
         if(
-            (logicCell.x === 0 && logicCell.y === 0) || // superior left corner
-            (logicCell.x === width - 1 && logicCell.y === 0) || // superior right
-            (logicCell.x === 0 && logicCell.y === height - 1) ||  // inferior left corner
-            (logicCell.x === width - 1 && logicCell.y === height - 1)  // inferior right corner
+            (this.x === 0 && this.y === 0) || // superior left corner
+            (this.x === width - 1 && this.y === 0) || // superior right
+            (this.x === 0 && this.y === height - 1) ||  // inferior left corner
+            (this.x === width - 1 && this.y === height - 1)  // inferior right corner
         )
             clickedCellType = 'corner'
 
@@ -34,17 +37,17 @@ class Cell{
             if(randomNumber <= 10)
                 nearMines = 0
             else if(randomNumber <= 20)
-                blankSapces = 1
+                nearMines = 1
             else if(randomNumber <= 45)
-                blankSapces = 2
+                nearMines = 2
             else if(randomNumber <= 55)
-                blankSapces = 3
+                nearMines = 3
             else if(randomNumber <= 80)
-                blankSapces = 4
+                nearMines = 4
             else if(randomNumber <= 90)
-                blankSapces = 5
+                nearMines = 5
             else if(randomNumber <= 100)
-                blankSapces = 6
+                nearMines = 6
         }
         else if(clickedCellType === 'border'){
             if(randomNumber <= 25)
