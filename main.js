@@ -19,7 +19,7 @@ let minesQuantity = 0
 let width = 0
 let height = 0
 let minesLeft = 0
-const minePercent = 20; // X% of all cells will be mines
+const minePercent = 18; // X% of all cells will be mines
 let cellsGrid = []
 
 function ResetVars(){
