@@ -12,13 +12,13 @@ const heightInput = document.getElementById('height');
 widthInput.value = 10
 heightInput.value = 10
 
-const backgroundMusic = new Audio('desert.wav');
-const loseSound = new Audio('lose.wav')
-const winSound = new Audio('win.wav')
+const backgroundMusic = new Audio('sfx/desert.wav');
+const loseSound = new Audio('sfx/lose.wav')
+const winSound = new Audio('sfx/win.wav')
 
-const revealSoundName = 'reveal.wav'
-const blockSoundName = 'block.wav'
-const unblockSoundName = 'unblock.wav'
+const revealSoundName = 'sfx/reveal.wav'
+const blockSoundName = 'sfx/block.wav'
+const unblockSoundName = 'sfx/unblock.wav'
 backgroundMusic.loop = true
 
 const cellSize = 27; // 25px height and weight and 2px border in all sides
